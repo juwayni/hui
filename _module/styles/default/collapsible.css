@@ -1,0 +1,58 @@
+.collapsible {
+    spacing: 0px;
+}
+
+.collapsible-header {
+    padding: 5px;
+    background-color: $solid-background-color;
+    border-radius: 0;
+    border: 0px solid $normal-border-color;
+    border-color: $normal-border-color;
+    border-bottom-width: 1px;
+    pointer-events: all;
+}
+
+.collapsible-header.expanded {
+    background-color: $solid-background-color;
+    filter: $normal-inner-shadow;
+}
+
+.collapsible.last .collapsible-header.collapsed {
+}
+
+.collapsible-header:hover {
+    background-color: $solid-background-color-hover;
+}
+
+.collapsible .collapsible-icon {
+    resource: $arrow-right-square;
+    vertical-align: center;
+}
+
+.collapsible .collapsible-icon.expanded {
+    resource: $arrow-down-square;
+}
+
+.collapsible.expanded .collapsible-icon {
+    
+}
+
+.collapsible .collapsible-label {
+    width: 100%;
+    vertical-align: center;
+}
+
+.collapsible-content {
+    padding: 5px 5px;
+    width: 100%;
+    border-bottom: 1px solid $normal-border-color;
+    clip: true;
+}
+
+.collapsible.no-padding .collapsible-content {
+    padding: 0px;
+}
+
+.collapsible.last .collapsible-content {
+    border-bottom: none;
+}

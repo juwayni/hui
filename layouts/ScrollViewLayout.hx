@@ -1,0 +1,163 @@
+package haxe_ui.layouts;
+
+import haxe_ui.components.HorizontalScroll;
+import haxe_ui.components.VerticalScroll;
+import haxe_ui.containers.ScrollView;
+import haxe_ui.core.Component;
+import haxe_ui.core.Platform;
+import haxe_ui.geom.Size;
+
+@:access(haxe_ui.backend.ComponentImpl)
+class ScrollViewLayout extends DefaultLayout {
+    private override function repositionChildren() {
+        repositionChild(component.findComponent("empty-contents-component", false, "css"));
+
+        var contents:Component = component.findComponent("scrollview-contents", false, "css");
+        if (contents == null) {
+            return;
+        }
+
+        var hscroll = component.findComponent(HorizontalScroll, false);
+        var vscroll = component.findComponent(VerticalScroll, false);
+        var borderSize = this.borderSize;
+        
+        if (hscroll != null && hidden(hscroll) == false) {
+            var offset:Float = 0;
+            if (_component.isHybridScroller) {
+                offset = borderSize;
+            }
+            var xpos = paddingLeft + borderSize - offset;
+            var ypos = component.componentHeight - hscroll.componentHeight - paddingBottom + marginTop(hscroll) - borderSize - offset;
+            #if haxeui_allow_subpixels
+            hscroll.moveComponent(xpos, ypos);
+            #else
+            hscroll.moveComponent(xpos, Math.fround(ypos));
+            #end
+        }
+
+        if (vscroll != null && hidden(vscroll) == false) {
+            var offset:Float = 0;
+            if (_component.isHybridScroller) {
+                offset = borderSize;
+            }
+            var xpos = component.componentWidth - vscroll.componentWidth - paddingRight + marginLeft(vscroll) - borderSize - offset;
+            var ypos = paddingTop + borderSize - offset;
+            #if haxeui_allow_subpixels
+            vscroll.moveComponent(xpos, ypos);
+            #else
+            vscroll.moveComponent(Math.fround(xpos), ypos);
+            #end
+        }
+
+        var contents:Component = component.findComponent("scrollview-contents", false, "css");
+        if (contents != null) {
+            contents.moveComponent(paddingLeft + borderSize, paddingTop + borderSize);
+        }
+    }
+
+    private override function resizeChildren() {
+        super.resizeChildren();
+
+        var scrollview = cast(_component, ScrollView);
+        
+        var hscroll = component.findComponent(HorizontalScroll, false);
+        var vscroll = component.findComponent(VerticalScroll, false);
+
+        var usableSize:Size = usableSize;
+        var percentWidth:Float = 100;
+        var percentHeight:Float = 100;
+        for (child in component.childComponents) {
+            if (child != hscroll && child != vscroll) {
+                continue;
+            }
+
+            var cx:Null<Float> = null;
+            var cy:Null<Float> = null;
+
+            if (child.percentWidth != null) {
+                cx = (usableSize.width * child.percentWidth) / percentWidth - marginLeft(child) - marginRight(child);
+            }
+            if (child.percentHeight != null) {
+                cy = (usableSize.height * child.percentHeight) / percentHeight - marginTop(child) - marginBottom(child);
+            }
+
+            if (fixedMinWidth(child) && child.percentWidth != null) {
+                percentWidth -= child.percentWidth;
+            }
+            if (fixedMinHeight(child) && child.percentHeight != null) {
+                percentHeight -= child.percentHeight;
+            }
+
+            if (scrollview.autoHideScrolls == true) {
+                if (child == hscroll && vscroll != null && vscroll.hidden == false) {
+                    cx -= vscroll.width;
+                } else if (child == vscroll && hscroll != null && hscroll.hidden == false) {
+                    cy -= hscroll.height;
+                }
+            }
+            
+            child.resizeComponent(cx, cy);
+        }
+    }
+
+    @:access(haxe_ui.backend.ComponentBase)
+    private override function get_usableSize():Size {
+        var size:Size = super.get_usableSize();
+        var hscroll = component.findComponent(HorizontalScroll, false);
+        var vscroll = component.findComponent(VerticalScroll, false);
+        if (hscroll != null && hscroll.includeInLayout == true && hidden(hscroll) == false) {
+            size.height -= hscroll.componentHeight - marginTop(hscroll);
+        }
+        if (vscroll != null && vscroll.includeInLayout == true && hidden(vscroll) == false) {
+            size.width -= vscroll.componentWidth - marginLeft(vscroll);
+        }
+
+        if (cast(component, ScrollView).native == true || _component.isNativeScroller == true) {
+            var contents:Component = component.findComponent("scrollview-contents", false, "css");
+            if (contents != null) {
+                if (contents.componentWidth > size.width) {
+                    size.height -= Platform.hscrollHeight;
+                }
+                if (contents.componentHeight > size.height) {
+                    size.width -= Platform.vscrollWidth;
+                }
+            }
+        }
+
+        var borderSize = this.borderSize;
+        size.width -= borderSize * 2;
+        size.height -= borderSize * 2;
+        
+        return size;
+    }
+
+    @:access(haxe_ui.backend.ComponentBase)
+    public override function calcAutoSize(exclusions:Array<Component> = null):Size {
+        var hscroll = component.findComponent(HorizontalScroll, false);
+        var vscroll = component.findComponent(VerticalScroll, false);
+        var size:Size = super.calcAutoSize([hscroll, vscroll]);
+        if (hscroll != null && hscroll.hidden == false) {
+            size.height += hscroll.componentHeight;
+        }
+        if (vscroll != null && vscroll.hidden == false) {
+            size.width += vscroll.componentWidth;
+        }
+
+        if (cast(component, ScrollView).native == true || _component.isNativeScroller == true) {
+            var contents:Component = component.findComponent("scrollview-contents", false, "css");
+            if (contents != null) {
+                if (contents.width > component.width) {
+                    size.height += Platform.hscrollHeight;
+                }
+                if (contents.height > component.height) {
+                    size.width += Platform.vscrollWidth;
+                }
+            }
+        }
+
+        size.width += borderSize * 2;
+        size.height += borderSize * 2;
+        
+        return size;
+    }
+}

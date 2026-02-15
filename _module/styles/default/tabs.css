@@ -1,0 +1,338 @@
+/************************************************************************
+** TABBAR (TOP)
+*************************************************************************/
+.tabbar {
+    padding-left: 0px;
+    padding-right: 0px;
+    height: auto;
+    width: auto;
+    border-bottom-width: 1px;
+    border-bottom-color: $normal-border-color;
+    border-top-width: 0px;
+    clip: true;
+    spacing: 8px;
+}
+
+.tabbar > .tabbar-contents {
+    border: none;
+    border-bottom-width: 1px;
+    border-bottom-color: $normal-border-color;
+    spacing: 0;
+}
+
+.tabbar-button {
+    border-radius: 0px;
+    background: $solid-background-color-down $solid-background-color-down vertical;
+    padding: 7px 8px;
+    vertical-align: bottom;
+    border-left-width: 0px;
+    cursor: pointer;
+    icon-position: far-left;
+}
+
+.tabbar-button .icon {
+    pointer-events: none;
+}
+
+.tabbar-button.first {
+    border-left-width: 1px;
+}
+
+.tabbar-button:hover {
+    background: $solid-background-color $solid-background-color vertical;
+    border-color: $normal-border-color;
+}
+
+.tabbar-button:down {
+    border: 1px solid $normal-border-color;
+}
+
+.tabbar-button:active {
+    border-top: 1px solid $normal-border-color;
+    border-right: 1px solid $normal-border-color;
+    border-bottom: 1px solid $normal-border-color;
+    border-left-color: $normal-border-color;
+    border-left-width: 0px;
+
+    border-top: 2px solid $accent-gradient-start;
+}
+
+.tabbar-button-selected.first:active {
+    border-left-width: 1px;
+}
+
+.tabbar-button-selected {
+    border-radius: 0px;
+
+    border-bottom-width: 1px;
+    border-bottom-color: $secondary-background-color;
+    background-color: $secondary-background-color;
+    border-left-width: 0px;
+    
+    border-top: 2px solid $accent-color;
+}
+
+.tabbar-button-selected.first {
+    border-left-width: 1px;
+}
+
+.tabbar-button-selected:active {
+    border-bottom-color: $secondary-background-color;
+}
+
+.tabbar-scroll-left {
+    icon: $arrow-left;
+    border-radius: 0;
+    padding: 5px;
+    margin-left: 2px;
+}
+
+.tabbar-scroll-right {
+    icon: $arrow-right;
+    border-radius: 0;
+    padding: 5px;
+    margin-left: 3px;
+}
+
+.tabbar-filler-left {
+    width: 1px;
+    background-color: $normal-border-color;
+}
+
+.tabbar-filler-right {
+    width: 1px;
+    background-color: $normal-border-color;
+}
+
+.tabbar-button-selected .label {
+}
+
+.tabbar-button-selected .icon {
+}
+
+.tabbar-button .tab-close-button {
+    resource: $close;
+    vertical-align: "center";
+    cursor: "pointer";
+    pointer-events: true;
+    padding: 3px;
+    border-radius: 2px;
+}
+
+.tabbar-button .tab-close-button:hover {
+    resource: $close-hover;
+    background-color: $selection-background-color;
+}
+
+.tabbar .tabbar-button:disabled {
+    border-color: $normal-border-color;
+}
+
+.tabbar .tabbar-button-selected:disabled {
+    border-color: $normal-border-color;
+    border-bottom-color: $secondary-background-color;
+}
+
+/************************************************************************
+** TABBAR (BOTTOM)
+*************************************************************************/
+.tabbar:bottom {
+    padding-left: 0px;
+    padding-right: 0px;
+    height: auto;
+    width: auto;
+    border-bottom-width: 0px;
+    border-top-width: 1px;
+    border-top-color: $normal-border-color;
+    clip: true;
+}
+
+.tabbar:bottom .tabbar-contents {
+    border: none;
+    border-bottom-width: 0px;
+    border-top-width: 1px;
+    border-top-color: $normal-border-color;
+    spacing: 0;
+}
+
+.tabbar-button:bottom {
+    vertical-align: top;
+    border-left-width: 0px;
+}
+
+.tabbar-button.first {
+    border-left-width: 1px;
+}
+
+.tabbar-button-selected:bottom {
+    border-radius: 0px;
+
+    border: 1px solid $normal-border-color;
+    border-top-width: 1px;
+    border-top-color: $secondary-background-color;
+    background-color: $secondary-background-color;
+    border-left-width: 0px;
+    
+    border-bottom: 2px solid $accent-color;
+}
+
+.tabbar:bottom .tabbar-button:active {
+    border-bottom: 2px solid $accent-color;
+    border-right: 1px solid $normal-border-color;
+    border-top: 1px solid $normal-border-color;
+    border-left-color: $normal-border-color;
+}
+
+.tabbar:bottom .tabbar-button-selected:active {
+    border-top-color: $secondary-background-color;
+}
+
+.tabbar-button-selected.first {
+    border-left-width: 1px;
+}
+
+.tabbar:bottom .tabbar-button-selected:disabled {
+    border-color: $disabled-border-color;
+    border-top-color: $secondary-background-color;
+}
+
+
+/************************************************************************
+** TABBAR - ROUNDED TABS
+*************************************************************************/
+.rounded-tabs .tabbar-button.first {
+    border-top-left-radius: 4px;
+}
+.rounded-tabs .tabbar-button.last {
+    border-top-right-radius: 4px;
+}
+
+.rounded-tabs .tabbar:bottom .tabbar-button {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+.rounded-tabs .tabbar:bottom .tabbar-button.first {
+    border-bottom-left-radius: 4px;
+}
+.rounded-tabs .tabbar:bottom .tabbar-button.last {
+    border-bottom-right-radius: 4px;
+}
+
+.rounded-tabs .tabbar .tabbar-scroll-left {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.rounded-tabs .tabbar .tabbar-scroll-right {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+/************************************************************************
+** TABVIEW
+*************************************************************************/
+.tabview {
+    border: none;
+    width: auto;
+    height: auto;
+}
+
+.tabview > .tabview-tabs {
+    margin-top: 1px;
+}
+
+.tabview:bottom > .tabview-tabs {
+    margin-top: 0px;
+}
+
+.tabview > .tabview-content {
+    border: $normal-border-size solid $normal-border-color;
+    padding: 8px;
+    background-color: $secondary-background-color;
+}
+
+.tabview-content:disabled {
+    border-color: $disabled-border-color;
+}
+
+.tabview.no-padding > .tabview-content {
+    padding: 0px;
+}
+
+.tabview.no-border > .tabview-content {
+    border: none;
+}
+
+/************************************************************************
+** TABVIEW ALT STYLES - COLLAPSIBLE LABELS
+*************************************************************************/
+.collapsible-labels .tabbar-button .label {
+    hidden: true;
+}
+
+.collapsible-labels .tabbar-button-selected .label {
+    hidden: false;
+}
+
+/************************************************************************
+** TABVIEW ALT STYLES - FULL WIDTH BUTTONS
+*************************************************************************/
+.full-width-buttons .tabbar-button, .full-width-buttons .tabbar > .tabbar-contents {
+    width: 100%;
+}
+
+/************************************************************************
+** TABVIEW ALT STYLES - FLAT BUTTONS
+*************************************************************************/
+.tabview.flat-tabs .tabview-content {
+    border: none;
+}
+
+.tabbar.flat-tabs .tabbar-button, .tabview.flat-tabs > .tabbar .tabbar-button {
+    background-color: none;
+    border: none;
+    filter: none;
+}
+
+.tabbar.flat-tabs .tabbar-button-selected, .tabview.flat-tabs > .tabbar .tabbar-button-selected {
+    border-none: none;
+    border-bottom: 1px solid $accent-color;
+    color: $accent-color-darker;
+}
+
+.tabbar.flat-tabs:bottom .tabbar-button-selected, .tabview.flat-tabs > .tabbar:bottom .tabbar-button-selected {
+    border-top: 1px solid $accent-color;
+    border-bottom: none;
+    color: $accent-color-darker;
+}
+
+/************************************************************************
+** TABVIEW ALT STYLES - PILL BUTTONS
+*************************************************************************/
+.tabview.pill-tabs .tabview-content {
+    border: none;
+}
+
+.tabbar.pill-tabs, .tabview.pill-tabs > .tabbar { 
+    background-color: $solid-background-color-down;
+    padding: 5px;
+}
+
+.tabbar.pill-tabs .tabbar-contents, .tabview.pill-tabs > .tabbar .tabbar-contents {
+    border: none;
+    spacing: 5px;
+}
+
+.tabbar.pill-tabs .tabbar-button, .tabview.pill-tabs > .tabbar .tabbar-button {
+    background-color: none;
+    border: none;
+    filter: none;
+    border-radius: 5px;
+    color: $down-text-color;
+}
+
+.tabbar.pill-tabs .tabbar-button-selected, .tabview.pill-tabs > .tabbar .tabbar-button-selected {
+    background-color: $hover-background-color-end;
+    color: $accent-color-darker;
+}

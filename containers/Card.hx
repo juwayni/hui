@@ -1,0 +1,86 @@
+package haxe_ui.containers;
+
+import haxe_ui.behaviours.DataBehaviour;
+import haxe_ui.components.Label;
+import haxe_ui.containers.Box;
+import haxe_ui.containers.HBox;
+import haxe_ui.core.Component;
+import haxe_ui.core.CompositeBuilder;
+
+@:composite(Builder)
+class Card extends Box {
+    //***********************************************************************************************************
+    // Public API
+    //***********************************************************************************************************
+    @:clonable @:behaviour(TextBehaviour)       public var text:String;
+    @:clonable @:value(text)                    public var value:Dynamic;
+}
+
+//***********************************************************************************************************
+// Behaviours
+//***********************************************************************************************************
+@:dox(hide) @:noCompletion
+@:access(haxe_ui.core.Component)
+private class TextBehaviour extends DataBehaviour {
+    public override function validateData() {
+        var builder:Builder = cast(_component._compositeBuilder, Builder);
+        builder.getTitleLabel().text = _value;
+        
+    }
+}
+
+//***********************************************************************************************************
+// Composite Builder
+//***********************************************************************************************************
+@:dox(hide) @:noCompletion
+@:allow(haxe_ui.components.TabBar)
+@:access(haxe_ui.core.Component)
+private class Builder extends CompositeBuilder {
+    private var _card:Card;
+    public function new(card:Card) {
+        super(card);
+        _card = card;
+    }
+    
+    public function getTitleLabel():Label {
+        var titleContainer = getTitleContainer();
+        var titleLabel = titleContainer.findComponent("card-title-label", Label);
+        if (titleLabel == null) {
+            _card.layoutName = "vertical";
+            var hbox = titleContainer.findComponent("card-title-box", HBox);
+            if (hbox == null) {
+                hbox = new HBox();
+                hbox.addClass("card-title-box");
+                hbox.id = "card-title-box";
+                titleContainer.addComponent(hbox);
+            }
+            
+            titleLabel = new Label();
+            titleLabel.addClass("card-title-label");
+            titleLabel.id = "card-title-label";
+            hbox.addComponentAt(titleLabel, 0);
+            
+            var line = titleContainer.findComponent("card-title-line", Component);
+            if (line == null) {
+                line = new Component();
+                line.id = "card-title-line";
+                line.addClass("card-title-line");
+                titleContainer.addComponent(line);
+            }
+        }
+        
+        return titleLabel;
+    }
+    
+    public function getTitleContainer():VBox {
+        var titleContainer = _component.findComponent("card-title-container", VBox);
+        if (titleContainer == null) {
+            titleContainer = new VBox();
+            titleContainer.addClass("card-title-container");
+            titleContainer.id = "card-title-container";
+            _card.addComponentAt(titleContainer, 0);
+        }
+        
+        return titleContainer;
+    }
+}

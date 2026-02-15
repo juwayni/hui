@@ -1,0 +1,128 @@
+.property-grid .scrollview-contents {
+    width: 100%;
+    padding: 0px;
+    spacing: 0px;
+}
+
+.property-grid .property-group {
+    width: 100%;
+}
+
+.property-grid .property-group .collapsible-content {
+    padding: 0;
+    spacing: 0;
+    width: 100%;
+}
+
+.property {
+    width: 100%;
+    border-bottom: 1px solid $normal-border-color;
+    spacing: 0;
+}
+
+.property.scrolling.last {
+    border-bottom: none;
+}
+
+.property-label-container {
+    width: 50%;
+    height: 100%;
+    vertical-align: center;
+    padding-left: 5px;
+    border-right: 1px solid $normal-border-color;
+}
+
+.property-label {
+    width: 100%;
+    vertical-align: center;
+}
+
+.property-editor {
+    width: 50%;
+    padding-bottom: 1px;
+}
+
+.property-editor-text {
+}
+
+.property-editor-text .textfield {
+    border: none;
+    border-radius: none;
+    filter: none;
+}
+
+.property-editor-options .horizontal-button-bar {
+    border: none;
+    padding: none;
+    background-color: blue;
+}
+
+.property-editor-options .horizontal-button-bar .button { 
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.property-editor-options .horizontal-button-bar .button {
+    border: none;
+    border-right: 1px solid $normal-border-color;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.property-editor-options .horizontal-button-bar .button.last {
+    border-right: none;
+}
+
+.property-editor-list .dropdown {
+    border: none;
+    border-radius: 0;
+}
+
+.property-editor-color .dropdown {
+    border: none;
+    border-radius: 0;
+}
+
+.property-editor-date .dropdown {
+    border: none;
+    border-radius: 0;
+}
+
+.property-editor-number .number-stepper {
+    border: none;
+}
+
+.property-editor-boolean {
+    padding: 5px;
+
+}
+
+.property-editor-boolean .checkbox {
+    horizontal-align: center;
+}
+
+.property-editor-file {
+    padding-left: 5px;
+}
+
+.property-editor-file .label {
+    vertical-align: center;
+}
+
+.property-editor-file .button {
+    border: none;
+    padding: 5px 8px;
+    border-radius: none;
+    border-left: 1px solid $normal-border-color;
+}
+
+.property-editor-dropdown-popup {
+    margin-top: 1px;
+    margin-left: -1px;
+    margin-right: -1px;
+}
+
+.property-editor-dropdown-popup .dropdown-filler {
+}
