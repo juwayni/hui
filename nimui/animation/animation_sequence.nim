@@ -1,13 +1,14 @@
 import nimui/animation/animation_builder
 
 type
-  AnimationSequence* = ref object
-    onComplete*: proc() {.closure.}
+  AnimationSequence* = ref object of RootObj
+    onComplete*: proc()
     builders*: seq[AnimationBuilder]
     activeBuilders: seq[AnimationBuilder]
 
 proc newAnimationSequence*(): AnimationSequence =
-  AnimationSequence(builders: @[])
+  new result
+  result.builders = @[]
 
 proc add*(self: AnimationSequence, builder: AnimationBuilder) =
   if builder == nil:
@@ -17,6 +18,7 @@ proc add*(self: AnimationSequence, builder: AnimationBuilder) =
 proc onAnimationComplete(self: AnimationSequence) =
   if self.activeBuilders.len > 0:
     discard self.activeBuilders.pop()
+
   if self.activeBuilders.len == 0:
     if self.onComplete != nil:
       self.onComplete()
@@ -27,7 +29,7 @@ proc play*(self: AnimationSequence) =
       self.onComplete()
     return
 
-  self.activeBuilders = self.builders # Copy seq
+  self.activeBuilders = self.builders
   for builder in self.builders:
     let s = self
     builder.onComplete = proc() =

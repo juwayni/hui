@@ -1,17 +1,17 @@
-import nimui/events/ui_event
+import nimui/core/types
 import strutils
 
 type
   DialogButton* = string
 
 const
-  DialogButtonSave*: DialogButton = "{{save}}"
-  DialogButtonYes*: DialogButton = "{{yes}}"
-  DialogButtonNo*: DialogButton = "{{no}}"
-  DialogButtonClose*: DialogButton = "{{close}}"
-  DialogButtonOk*: DialogButton = "{{ok}}"
-  DialogButtonCancel*: DialogButton = "{{cancel}}"
-  DialogButtonApply*: DialogButton = "{{apply}}"
+  DialogButtonOk* = "{{ok}}"
+  DialogButtonCancel* = "{{cancel}}"
+  DialogButtonClose* = "{{close}}"
+  DialogButtonYes* = "{{yes}}"
+  DialogButtonNo* = "{{no}}"
+  DialogButtonSave* = "{{save}}"
+  DialogButtonApply* = "{{apply}}"
 
 proc `|`*(lhs, rhs: DialogButton): DialogButton =
   var larr = lhs.split('|')
@@ -21,18 +21,6 @@ proc `|`*(lhs, rhs: DialogButton): DialogButton =
       larr.add(r)
   return larr.join("|")
 
-proc `==`*(lhs: DialogButton, rhs: DialogButton): bool =
-  var larr = lhs.split('|')
-  return rhs in larr
-
-proc toArray*(self: DialogButton): seq[DialogButton] =
-  var a: seq[DialogButton] = @[]
-  for i in self.split('|'):
-    let trimmed = i.strip()
-    if trimmed.len > 0 and trimmed != "null":
-      a.add(trimmed)
-  return a
-
 type
   DialogEvent* = ref object of UIEvent
     button*: DialogButton
@@ -40,5 +28,10 @@ type
 const
   DialogEventClosed* = "dialogClosed"
 
-proc newDialogEvent*(eventType: string): DialogEvent =
-  DialogEvent(type: eventType)
+proc newDialogEvent*(eventType: string, bubble: bool = false, data: RootRef = nil): DialogEvent =
+  result = DialogEvent(
+    `type`: eventType,
+    bubble: bubble,
+    data: data,
+    canceled: false
+  )

@@ -1,8 +1,8 @@
+import asyncdispatch
+
 type
   CallLaterImpl* = ref object of RootObj
 
-var callLaterQueue*: seq[proc() {.closure.}] = @[]
-
-proc newCallLaterImpl*(fn: proc() {.closure.}): CallLaterImpl =
-  callLaterQueue.add(fn)
-  return CallLaterImpl()
+proc newCallLaterImpl*(fn: proc() {.gcsafe.}) =
+  # Execute after a very short delay
+  callSoon(fn)

@@ -11,22 +11,20 @@ type
 
   OpenFileDialogBase* = ref object of RootObj
     selectedFiles*: seq[SelectedFileInfo]
-    callback*: proc(button: DialogButton, selectedFiles: seq[SelectedFileInfo])
+    callback*: proc(button: DialogButton, files: seq[SelectedFileInfo])
     onDialogClosed*: proc(event: DialogEvent)
     options*: OpenFileDialogOptions
 
-proc newOpenFileDialogBase*(options: OpenFileDialogOptions, callback: proc(button: DialogButton, selectedFiles: seq[SelectedFileInfo])): OpenFileDialogBase =
-  OpenFileDialogBase(options: options, callback: callback)
-
-proc validateOptions*(self: OpenFileDialogBase) =
-  # In Nim, objects have default values, but we can explicitly set them if they weren't initialized
-  # or use this to ensure consistency.
-  discard # defaults are already false/empty for these types in Nim
+proc newOpenFileDialogBase*(options: OpenFileDialogOptions, callback: proc(button: DialogButton, files: seq[SelectedFileInfo])): OpenFileDialogBase =
+  result = OpenFileDialogBase(
+    options: options,
+    callback: callback
+  )
 
 method show*(self: OpenFileDialogBase) {.base.} =
-  messageBox("OpenFileDialog has no implementation on this backend", "Open File", mtError)
+  discard
 
-proc dialogConfirmed*(self: OpenFileDialogBase, files: seq[SelectedFileInfo]) =
+method dialogConfirmed*(self: OpenFileDialogBase, files: seq[SelectedFileInfo]) {.base.} =
   self.selectedFiles = files
   if self.callback != nil:
     self.callback(DialogButtonOk, self.selectedFiles)
@@ -35,7 +33,7 @@ proc dialogConfirmed*(self: OpenFileDialogBase, files: seq[SelectedFileInfo]) =
     event.button = DialogButtonOk
     self.onDialogClosed(event)
 
-proc dialogCancelled*(self: OpenFileDialogBase) =
+method dialogCancelled*(self: OpenFileDialogBase) {.base.} =
   self.selectedFiles = @[]
   if self.callback != nil:
     self.callback(DialogButtonCancel, self.selectedFiles)

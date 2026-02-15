@@ -2,5 +2,5 @@ type
   UnitTime* = string
 
 const
-  UnitTimeSecond*: UnitTime = "s"
-  UnitTimeMillisecond*: UnitTime = "ms"
+  UnitTimeSeconds*: UnitTime = "s"
+  UnitTimeMilliseconds*: UnitTime = "ms"

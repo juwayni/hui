@@ -30,19 +30,19 @@ proc isMobile*(self: PlatformBase): bool =
   # Logic to detect mobile if needed, for now use internal flag
   self.isMobileInternal
 
-proc getMetric*(self: PlatformBase, id: string): float =
+method getMetric*(self: PlatformBase, id: string): float {.base.} =
   return 0
 
-proc getColor*(self: PlatformBase, id: string): int =
+method getColor*(self: PlatformBase, id: string): int {.base.} =
   return -1
 
-proc getSystemLocale*(self: PlatformBase): string =
+method getSystemLocale*(self: PlatformBase): string {.base.} =
   return ""
 
-proc perf*(self: PlatformBase): float =
+method perf*(self: PlatformBase): float {.base.} =
   return cpuTime() * 1000
 
-proc getKeyCode*(self: PlatformBase, keyId: string): int =
+method getKeyCode*(self: PlatformBase, keyId: string): int {.base.} =
   case keyId:
     of "tab": return KeyCodeTab
     of "up": return KeyCodeUp

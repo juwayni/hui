@@ -1,23 +1,24 @@
-import strutils
-import pixie
+import strutils, tables, math
 
 type
-  Color* = int32
+  Color* = distinct int
+
+proc `==`*(a, b: Color): bool {.borrow.}
+proc `or`*(a, b: Color): Color {.borrow.}
 
 const
-  ColorWhite*: Color = 0xffffff.int32
-  ColorBlack*: Color = 0x000000.int32
+  ColorMediumVioletRed*: Color = Color(0xc71585)
+  ColorDeepPink*: Color = Color(0xff1493)
+  ColorWhite*: Color = Color(0xffffff)
+  ColorBlack*: Color = Color(0x000000)
+  # ... Add more if needed, but keeping it small for now to ensure compilability
 
-proc r*(c: Color): int = (c shr 16) and 0xFF
-proc g*(c: Color): int = (c shr 8) and 0xFF
-proc b*(c: Color): int = c and 0xFF
-proc a*(c: Color): int = (c shr 24) and 0xFF
+proc r*(c: Color): int = (int(c) shr 16) and 0xFF
+proc g*(c: Color): int = (int(c) shr 8) and 0xFF
+proc b*(c: Color): int = int(c) and 0xFF
+proc a*(c: Color): int = (int(c) shr 24) and 0xFF
 
-proc colorFromComponents*(r, g, b, a: int): Color =
-  ((a and 0xFF) shl 24).int32 or ((r and 0xFF) shl 16).int32 or ((g and 0xFF) shl 8).int32 or (b and 0xFF).int32
+proc fromComponents*(r, g, b, a: int): Color =
+  return Color(((a and 0xFF) shl 24) or ((r and 0xFF) shl 16) or ((g and 0xFF) shl 8) or (b and 0xFF))
 
-proc toPixie*(c: Color): pixie.Color =
-  rgb(c.r.uint8, c.g.uint8, c.b.uint8)
-
-proc toPixieWithAlpha*(c: Color): pixie.Color =
-  rgba(c.r.uint8, c.g.uint8, c.b.uint8, c.a.uint8)
+proc toInt*(c: Color): int = int(c)

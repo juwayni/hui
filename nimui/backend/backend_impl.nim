@@ -1,5 +1,4 @@
 type
-  BackendImpl* = object
+  BackendImpl* = ref object of RootObj
 
-const
-  BackendImplId* = "pixie_windy"
+var backendId* = "pixie"

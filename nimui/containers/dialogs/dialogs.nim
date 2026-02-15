@@ -1,31 +1,16 @@
-import nimui/containers/dialogs/dialog
-
 type
   FileDialogExtensionInfo* = object
     extension*: string
     label*: string
 
-  FileInfo* = object
+  FileInfo* = ref object of RootObj
     name*: string
     text*: string
     bytes*: seq[byte]
     isBinary*: bool
 
-  SelectedFileInfo* = object
-    name*: string
-    text*: string
-    bytes*: seq[byte]
-    isBinary*: bool
+  SelectedFileInfo* = ref object of FileInfo
     fullPath*: string
 
-type
   MessageBoxType* = enum
-    mtInfo, mtQuestion, mtWarning, mtError, mtYesNo
-
-proc messageBox*(message: string, title: string = "", kind: MessageBoxType = mtInfo) =
-  # Minimal implementation
-  discard
-
-proc openFile*(callback: proc(button: DialogButton, selectedFiles: seq[SelectedFileInfo]), options: pointer = nil) =
-  # Minimal implementation
-  discard
+    TYPE_INFO, TYPE_QUESTION, TYPE_WARNING, TYPE_ERROR, TYPE_YESNO

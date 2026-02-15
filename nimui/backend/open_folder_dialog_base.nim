@@ -11,20 +11,20 @@ type
 
   OpenFolderDialogBase* = ref object of RootObj
     selectedFolders*: seq[string]
-    callback*: proc(button: DialogButton, selectedFolders: seq[string])
+    callback*: proc(button: DialogButton, folders: seq[string])
     onDialogClosed*: proc(event: DialogEvent)
     options*: OpenFolderDialogOptions
 
-proc newOpenFolderDialogBase*(options: OpenFolderDialogOptions, callback: proc(button: DialogButton, selectedFolders: seq[string])): OpenFolderDialogBase =
-  OpenFolderDialogBase(options: options, callback: callback)
-
-proc validateOptions*(self: OpenFolderDialogBase) =
-  discard
+proc newOpenFolderDialogBase*(options: OpenFolderDialogOptions, callback: proc(button: DialogButton, folders: seq[string])): OpenFolderDialogBase =
+  result = OpenFolderDialogBase(
+    options: options,
+    callback: callback
+  )
 
 method show*(self: OpenFolderDialogBase) {.base.} =
-  messageBox("OpenFolderDialog has no implementation on this backend", "Open Folder", mtError)
+  discard
 
-proc dialogConfirmed*(self: OpenFolderDialogBase, folders: seq[string]) =
+method dialogConfirmed*(self: OpenFolderDialogBase, folders: seq[string]) {.base.} =
   self.selectedFolders = folders
   if self.callback != nil:
     self.callback(DialogButtonOk, self.selectedFolders)
@@ -33,7 +33,7 @@ proc dialogConfirmed*(self: OpenFolderDialogBase, folders: seq[string]) =
     event.button = DialogButtonOk
     self.onDialogClosed(event)
 
-proc dialogCancelled*(self: OpenFolderDialogBase) =
+method dialogCancelled*(self: OpenFolderDialogBase) {.base.} =
   self.selectedFolders = @[]
   if self.callback != nil:
     self.callback(DialogButtonCancel, self.selectedFolders)

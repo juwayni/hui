@@ -10,38 +10,45 @@ type
   SaveFileDialogBase* = ref object of RootObj
     saveResult*: bool
     fullPath*: string
-    callback*: proc(button: DialogButton, success: bool, path: string)
+    callback*: proc(button: DialogButton, result: bool, path: string)
     onDialogClosed*: proc(event: DialogEvent)
     fileInfo*: FileInfo
     selectedFileInfo*: SelectedFileInfo
     options*: SaveFileDialogOptions
 
-proc newSaveFileDialogBase*(options: SaveFileDialogOptions, callback: proc(button: DialogButton, success: bool, path: string)): SaveFileDialogBase =
-  SaveFileDialogBase(options: options, callback: callback)
-
-proc validateOptions*(self: SaveFileDialogBase) =
-  discard
+proc newSaveFileDialogBase*(options: SaveFileDialogOptions, callback: proc(button: DialogButton, result: bool, path: string)): SaveFileDialogBase =
+  result = SaveFileDialogBase(
+    options: options,
+    callback: callback
+  )
 
 method show*(self: SaveFileDialogBase) {.base.} =
-  messageBox("SaveFileDialog has no implementation on this backend", "Save File", mtError)
+  discard
 
-proc dialogConfirmed*(self: SaveFileDialogBase, selectedFileInfo: SelectedFileInfo) =
+method dialogConfirmed*(self: SaveFileDialogBase, selectedFileInfo: SelectedFileInfo = nil) {.base.} =
   self.saveResult = true
-  self.selectedFileInfo = selectedFileInfo
-  self.fileInfo = FileInfo(name: selectedFileInfo.name, text: selectedFileInfo.text, bytes: selectedFileInfo.bytes, isBinary: selectedFileInfo.isBinary)
-  self.fullPath = selectedFileInfo.fullPath
+  if selectedFileInfo != nil:
+    self.selectedFileInfo = selectedFileInfo
+    self.fileInfo = selectedFileInfo
+    self.fullPath = selectedFileInfo.fullPath
 
   if self.callback != nil:
     self.callback(DialogButtonOk, self.saveResult, self.fullPath)
+
   if self.onDialogClosed != nil:
     let event = newDialogEvent(DialogEventClosed)
     event.button = DialogButtonOk
     self.onDialogClosed(event)
 
-proc dialogCancelled*(self: SaveFileDialogBase) =
+method dialogCancelled*(self: SaveFileDialogBase) {.base.} =
   self.saveResult = false
+  self.selectedFileInfo = nil
+  self.fileInfo = nil
+  self.fullPath = ""
+
   if self.callback != nil:
     self.callback(DialogButtonCancel, self.saveResult, "")
+
   if self.onDialogClosed != nil:
     let event = newDialogEvent(DialogEventClosed)
     event.button = DialogButtonCancel

@@ -2,12 +2,13 @@ import tables
 
 type
   AssetPlugin* = ref object of RootObj
-    props*: TableRef[string, string]
+    props: TableRef[string, string]
 
 proc newAssetPlugin*(): AssetPlugin =
-  AssetPlugin(props: newTable[string, string]())
+  new result
+  result.props = nil
 
-method invoke*(self: AssetPlugin, asset: RootRef): RootRef {.base.} =
+method invoke*(self: AssetPlugin, asset: any): any {.base.} =
   return asset
 
 method setProperty*(self: AssetPlugin, name: string, value: string) {.base.} =
@@ -18,8 +19,4 @@ method setProperty*(self: AssetPlugin, name: string, value: string) {.base.} =
 method getProperty*(self: AssetPlugin, name: string, defaultValue: string = ""): string {.base.} =
   if self.props == nil:
     return defaultValue
-  if self.props.hasKey(name):
-    let v = self.props[name]
-    if v != "":
-      return v
-  return defaultValue
+  return self.props.getOrDefault(name, defaultValue)

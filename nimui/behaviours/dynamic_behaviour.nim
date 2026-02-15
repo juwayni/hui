@@ -1,16 +1,11 @@
-import nimui/behaviours/behaviour
+import ./behaviour
 import nimui/util/variant
 
 type
   DynamicBehaviour* = ref object of Behaviour
-    value*: RootRef
 
-method getDynamic*(self: DynamicBehaviour): RootRef =
-  return self.value
+method getDynamic*(self: DynamicBehaviour): Variant {.base.} =
+  return self.get()
 
-method setDynamic*(self: DynamicBehaviour, value: RootRef) =
-  if self.value == value: return
-  self.value = value
-
-method set*(self: DynamicBehaviour, value: Variant) =
-  self.setDynamic(toDynamic(value))
+method setDynamic*(self: DynamicBehaviour, value: Variant) {.base.} =
+  self.set(value)

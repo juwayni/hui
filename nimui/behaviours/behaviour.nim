@@ -1,44 +1,26 @@
-import nimui/core/component
 import nimui/util/variant
+import nimui/core/types
 import tables
 
 type
   Behaviour* = ref object of RootObj
-    config*: TableRef[string, string]
     component*: Component
-    id*: string
+    valueInternal*: Variant
+    config*: TableRef[string, string]
 
 proc newBehaviour*(component: Component): Behaviour =
-  Behaviour(component: component, config: newTable[string, string]())
-
-method set*(self: Behaviour, value: Variant) {.base.} =
-  discard
-
-method setDynamic*(self: Behaviour, value: RootRef) {.base.} =
-  # self.set(Variant.fromDynamic(value))
-  discard
-
-method detatch*(self: Behaviour) {.base.} =
-  discard
+  new result
+  result.component = component
+  result.config = newTable[string, string]()
 
 method get*(self: Behaviour): Variant {.base.} =
-  return VNone()
+  return self.valueInternal
 
-method getDynamic*(self: Behaviour): RootRef {.base.} =
-  # return Variant.toDynamic(self.get())
-  return nil
+method set*(self: Behaviour, value: Variant) {.base.} =
+  self.valueInternal = value
 
 method update*(self: Behaviour) {.base.} =
   discard
 
-method call*(self: Behaviour, param: RootRef = nil): Variant {.base.} =
-  return VNone()
-
-proc getConfigValue*(self: Behaviour, name: string, defaultValue: string = ""): string =
-  if self.config == nil: return defaultValue
-  return self.config.getOrDefault(name, defaultValue)
-
-proc getConfigValueBool*(self: Behaviour, name: string, defaultValue: bool = false): bool =
-  let v = self.getConfigValue(name)
-  if v == "": return defaultValue
-  return v == "true"
+method call*(self: Behaviour, data: RootRef = nil): Variant {.base.} =
+  return Variant(kind: vkNull)
