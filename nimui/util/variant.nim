@@ -2,10 +2,11 @@ import times
 import pixie
 import strutils
 import math
+import nimui/styles/dimension
 
 type
   VariantKind* = enum
-    vkNull, vkInt, vkFloat, vkString, vkBool, vkArray, vkComponent, vkDataSource, vkDate, vkImageData
+    vkNull, vkInt, vkFloat, vkString, vkBool, vkArray, vkComponent, vkDataSource, vkDate, vkImageData, vkDimension
 
   Variant* = object
     case kind*: VariantKind
@@ -19,12 +20,14 @@ type
     of vkDataSource: ds*: RootRef
     of vkDate: d*: float
     of vkImageData: img*: Image
+    of vkDimension: vDimension*: Dimension
 
 converter toVariant*(i: int): Variant = Variant(kind: vkInt, i: i)
 converter toVariant*(f: float): Variant = Variant(kind: vkFloat, f: f)
 converter toVariant*(s: string): Variant = Variant(kind: vkString, s: s)
 converter toVariant*(b: bool): Variant = Variant(kind: vkBool, b: b)
 converter toVariant*(img: Image): Variant = Variant(kind: vkImageData, img: img)
+converter toVariant*(d: Dimension): Variant = Variant(kind: vkDimension, vDimension: d)
 
 proc toString*(v: Variant): string =
   case v.kind:
@@ -38,11 +41,15 @@ proc toString*(v: Variant): string =
     of vkDataSource: return "DataSource"
     of vkDate: return $v.d
     of vkImageData: return "ImageData"
+    of vkDimension: return "Dimension"
 
 proc toInt*(v: Variant): int =
   case v.kind:
     of vkInt: return v.i
     of vkFloat: return v.f.int
+    of vkDimension:
+      if v.vDimension.kind == dkPx: return v.vDimension.pxValue.int
+      else: return 0
     of vkString:
       try: return v.s.parseInt except: return 0
     else: return 0
@@ -51,6 +58,9 @@ proc toFloat*(v: Variant): float =
   case v.kind:
     of vkInt: return v.i.float
     of vkFloat: return v.f
+    of vkDimension:
+      if v.vDimension.kind == dkPx: return v.vDimension.pxValue
+      else: return 0.0
     of vkString:
       try: return v.s.parseFloat except: return 0.0
     else: return 0.0
@@ -60,6 +70,13 @@ proc toBool*(v: Variant): bool =
     of vkBool: return v.b
     of vkString: return v.s == "true"
     else: return false
+
+proc toDimension*(v: Variant): Dimension =
+  case v.kind:
+    of vkDimension: return v.vDimension
+    of vkFloat: return Dimension(kind: dkPx, pxValue: v.f)
+    of vkInt: return Dimension(kind: dkPx, pxValue: v.i.float)
+    else: return Dimension(kind: dkPx, pxValue: 0.0)
 
 proc isNumber*(v: Variant): bool =
   v.kind in {vkInt, vkFloat}

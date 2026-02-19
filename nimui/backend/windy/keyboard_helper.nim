@@ -1,13 +1,14 @@
-import windy
+import nimui/backend/toolkit_options
 
-proc toKeyCode*(key: Button): int =
-  case key:
-    of KeyTab: return 9
-    of KeyUp: return 38
-    of KeyDown: return 40
-    of KeyLeft: return 37
-    of KeyRight: return 39
-    of KeySpace: return 32
-    of KeyEnter: return 13
-    of KeyEscape: return 27
-    else: return 0
+type
+  KeyListenerCallback* = proc(keyCode: int) {.gcsafe.}
+
+var listen*: KeyListenerCallback = nil
+var unlisten*: KeyListenerCallback = nil
+
+proc isInitialized*(): bool =
+  return listen != nil
+
+proc init*(opts: ToolkitOptions = nil) =
+  # Windy specific initialization
+  discard

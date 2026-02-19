@@ -1,29 +1,30 @@
+import nimui/containers/dialogs/dialog_types
 import nimui/containers/dialogs/dialog
-import nimui/containers/dialogs/dialogs
+import nimui/util/variant
 
 type
-  SaveFileDialogOptions* = object
-    writeAsBinary*: bool
-    extensions*: seq[FileDialogExtensionInfo]
-    title*: string
-
   SaveFileDialogBase* = ref object of RootObj
     saveResult*: bool
     fullPath*: string
-    callback*: proc(button: DialogButton, result: bool, path: string)
-    onDialogClosed*: proc(event: DialogEvent)
+    callback*: proc(button: DialogButton, result: bool, path: string) {.gcsafe.}
+    onDialogClosed*: proc(event: DialogEvent) {.gcsafe.}
     fileInfo*: FileInfo
     selectedFileInfo*: SelectedFileInfo
     options*: SaveFileDialogOptions
 
-proc newSaveFileDialogBase*(options: SaveFileDialogOptions, callback: proc(button: DialogButton, result: bool, path: string)): SaveFileDialogBase =
-  result = SaveFileDialogBase(
-    options: options,
-    callback: callback
-  )
+proc newSaveFileDialogBase*(options: SaveFileDialogOptions = nil, callback: proc(button: DialogButton, result: bool, path: string) {.gcsafe.} = nil): SaveFileDialogBase =
+  new result
+  result.options = options
+  result.callback = callback
+  if result.options == nil:
+    result.options = SaveFileDialogOptions()
+
+method validateOptions*(self: SaveFileDialogBase) {.base.} =
+  if self.options == nil:
+    self.options = SaveFileDialogOptions()
 
 method show*(self: SaveFileDialogBase) {.base.} =
-  discard
+  self.dialogCancelled()
 
 method dialogConfirmed*(self: SaveFileDialogBase, selectedFileInfo: SelectedFileInfo = nil) {.base.} =
   self.saveResult = true
@@ -33,11 +34,11 @@ method dialogConfirmed*(self: SaveFileDialogBase, selectedFileInfo: SelectedFile
     self.fullPath = selectedFileInfo.fullPath
 
   if self.callback != nil:
-    self.callback(DialogButtonOk, self.saveResult, self.fullPath)
+    self.callback(DialogButton.Ok, self.saveResult, self.fullPath)
 
   if self.onDialogClosed != nil:
-    let event = newDialogEvent(DialogEventClosed)
-    event.button = DialogButtonOk
+    let event = newDialogEvent("dialogClosed")
+    event.button = DialogButton.Ok
     self.onDialogClosed(event)
 
 method dialogCancelled*(self: SaveFileDialogBase) {.base.} =
@@ -47,9 +48,9 @@ method dialogCancelled*(self: SaveFileDialogBase) {.base.} =
   self.fullPath = ""
 
   if self.callback != nil:
-    self.callback(DialogButtonCancel, self.saveResult, "")
+    self.callback(DialogButton.Cancel, self.saveResult, "")
 
   if self.onDialogClosed != nil:
-    let event = newDialogEvent(DialogEventClosed)
-    event.button = DialogButtonCancel
+    let event = newDialogEvent("dialogClosed")
+    event.button = DialogButton.Cancel
     self.onDialogClosed(event)

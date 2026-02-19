@@ -1,5 +1,6 @@
 import nimui/assets/asset_plugin
-import strutils
+import nimui/util/variant
+import std/strutils
 
 type
   AssetNamePlugin* = ref object of AssetPlugin
@@ -12,9 +13,10 @@ type
 
 proc newAssetNamePlugin*(): AssetNamePlugin =
   new result
+  result.props = initTable[string, string]()
 
 method setProperty*(self: AssetNamePlugin, name: string, value: string) =
-  case name:
+  switch name:
     of "startsWith":
       self.startsWith = value
     of "prefix":
@@ -30,35 +32,36 @@ method setProperty*(self: AssetNamePlugin, name: string, value: string) =
     else:
       procCall self.AssetPlugin.setProperty(name, value)
 
-method invoke*(self: AssetNamePlugin, asset: auto): auto =
-  if asset is string:
-    var stringAsset = asset.string
-    var matches = true
+method invoke*(self: AssetNamePlugin, asset: Variant): Variant =
+  if asset.kind == vkString:
+    var stringAsset = asset.toString()
+    var matched = true
     var compare = ""
 
     if self.startsWith != "":
-      matches = stringAsset.startsWith(self.startsWith)
+      matched = stringAsset.startsWith(self.startsWith)
       compare = self.startsWith
 
     if self.endsWith != "":
-      matches = stringAsset.endsWith(self.endsWith)
+      matched = stringAsset.endsWith(self.endsWith)
       compare = self.endsWith
 
-    if matches:
+    if matched:
       if self.prefix != "":
         stringAsset = self.prefix & stringAsset
 
       if self.replaceWith != "":
-        stringAsset = stringAsset.replace(compare, self.replaceWith)
+        if compare != "":
+          stringAsset = stringAsset.replace(compare, self.replaceWith)
         if self.findChars != "":
           for c in self.findChars:
             stringAsset = stringAsset.replace($c, self.replaceWith)
 
       if self.removeExtension:
-        let n = stringAsset.rfind(".")
+        let n = stringAsset.lastIndexOf('.')
         if n != -1:
           stringAsset = stringAsset[0 ..< n]
 
-      return stringAsset
+      return toVariant(stringAsset)
 
   return asset

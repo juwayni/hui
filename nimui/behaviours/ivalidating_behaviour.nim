@@ -1,5 +1,5 @@
 type
   IValidatingBehaviour* = ref object of RootObj
 
-method validate*(self: IValidatingBehaviour) {.base.} =
+method validate*(self: IValidatingBehaviour) {.base, gcsafe.} =
   discard

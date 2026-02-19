@@ -1,39 +1,30 @@
-import macros, os, strutils, json
+import std/macros
+import std/os
+import std/strutils
+import std/json
 
-macro buildFileList*(path: static[string]): untyped =
+macro buildFileList*(path: static string): untyped =
   var files: seq[JsonNode] = @[]
 
   for file in walkDirRec(path):
-    let relativePath = file.replace(path, "").replace("\\", "/")
-    let normalizedPath = if relativePath.startsWith("/"): relativePath[1..^1] else: relativePath
+    let relativePath = file.relativePath(path)
+    let ext = splitFile(relativePath).ext
 
-    let parts = normalizedPath.split('.')
-    if parts.len < 2: continue
+    var resType = ""
+    case ext.toLowerAscii():
+      of ".png", ".jpg", ".jpeg": resType = "image"
+      of ".ttf": resType = "font"
+      else: discard
 
-    let resourceName = parts[0..^2].join("_")
-      .replace("/", "_")
-      .replace(" ", "_")
-      .replace("-", "_")
-
-    var fileType = ""
-    if normalizedPath.endsWith(".png") or normalizedPath.endsWith(".jpg"):
-      fileType = "image"
-    elif normalizedPath.endsWith(".ttf"):
-      fileType = "font"
-
-    if fileType != "":
+    if resType != "":
+      var name = relativePath.replace("/", "_").replace("\\", "_").replace(".", "_").replace("-", "_")
       files.add(%*{
-        "name": resourceName,
-        "type": fileType,
-        "files": [normalizedPath]
+        "name": name,
+        "type": resType,
+        "files": [relativePath]
       })
 
   let config = %*{"files": files}
-  let jsonString = config.pretty()
+  # writeFile("resources.json", $config)
 
-  # In a real scenario we'd write to a configured path
-  # For now just echo or return as string
-  # writeFile("files.json", jsonString)
-
-  return quote do:
-    `jsonString`
+  result = newEmptyNode()

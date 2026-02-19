@@ -1,50 +1,21 @@
 import pixie
-import vmath
+import std/math
 
 type
   CornerRadius* = object
     tr*, br*, tl*, bl*: float
 
-  SDFPainter* = ref object of RootObj
-    ctx*: Context
+proc sdfRect*(ctx: Context, x, y, width, height: float, corner: CornerRadius, border: float, borderColor: Color, smooth: float) =
+  # Pixie has rounded rect support
+  ctx.fillStyle = rgba(borderColor.r.uint8, borderColor.g.uint8, borderColor.b.uint8, borderColor.a.uint8)
+  # Simplified - Pixie doesn't have per-corner radius in a single call easily without path
+  ctx.fillRoundedRect(rect(x, y, width, height), corner.tr)
 
-proc newSDFPainter*(ctx: Context): SDFPainter =
-  SDFPainter(ctx: ctx)
+proc sdfCircle*(ctx: Context, x, y, r: float, border: float, borderColor: Color, smooth: float) =
+  ctx.fillStyle = rgba(borderColor.r.uint8, borderColor.g.uint8, borderColor.b.uint8, borderColor.a.uint8)
+  ctx.fillCircle(circle(vec2(x, y), r))
 
-proc sdfRect*(self: SDFPainter, x, y, width, height: float,
-              corner: CornerRadius, border: float, borderColor: Color, smooth: float,
-              bottomleftColor: Color = Color(r:0, g:0, b:0, a:0),
-              topleftColor: Color = Color(r:0, g:0, b:0, a:0),
-              toprightColor: Color = Color(r:0, g:0, b:0, a:0),
-              bottomrightColor: Color = Color(r:0, g:0, b:0, a:0)) =
-  # Simplification using Pixie native rounded rect
-  # Pixie doesn't easily support different radius per corner in one call but we can approximate or use a path
-
-  self.ctx.save()
-  # For now, use the max corner radius or implement a path
-  let r = corner.tr # Simplified
-  if border > 0:
-    self.ctx.strokeStyle = borderColor
-    self.ctx.lineWidth = border
-    self.ctx.strokeRoundedRect(rect(x, y, width, height), r)
-
-  # Fill with one color for now (Pixie supports paint for gradients)
-  self.ctx.fillStyle = topleftColor
-  self.ctx.fillRoundedRect(rect(x, y, width, height), r)
-  self.ctx.restore()
-
-proc sdfCircle*(self: SDFPainter, x, y, r, border: float, borderColor: Color, smooth: float) =
-  self.ctx.save()
-  if border > 0:
-    self.ctx.strokeStyle = borderColor
-    self.ctx.lineWidth = border
-    self.ctx.strokeCircle(circle(vec2(x, y), r))
-
-  self.ctx.fillCircle(circle(vec2(x, y), r))
-  self.ctx.restore()
-
-proc sdfLine*(self: SDFPainter, x1, y1, x2, y2, strength, smooth: float) =
-  self.ctx.save()
-  self.ctx.lineWidth = strength
-  self.ctx.strokeSegment(segment(vec2(x1, y1), vec2(x2, y2)))
-  self.ctx.restore()
+proc sdfLine*(ctx: Context, x1, y1, x2, y2, strength, smooth: float) =
+  ctx.strokeStyle = ctx.fillStyle
+  ctx.lineWidth = strength
+  ctx.strokeSegment(segment(vec2(x1, y1), vec2(x2, y2)))

@@ -1,25 +1,20 @@
-import ./behaviour
-import ./dynamic_behaviour
-import ./ivalidating_behaviour
-import nimui/util/variant
-import nimui/core/component
 import nimui/core/types
+import nimui/util/variant
+import nimui/behaviours/dynamic_behaviour
+import nimui/behaviours/ivalidating_behaviour
 
-type
-  DynamicDataBehaviour* = ref object of DynamicBehaviour
-    dataInvalid*: bool
+method setDynamic*(self: DynamicDataBehaviour, value: Variant) =
+  if value == self.getDynamic():
+    return
+
+  self.dynamicValueInternal = value
+  self.dataInvalidInternal = true
+  self.component.invalidateComponentData()
 
 method validate*(self: DynamicDataBehaviour) =
-  if self.dataInvalid:
-    self.dataInvalid = false
-    # validateData()
-    discard
+  if self.dataInvalidInternal:
+    self.dataInvalidInternal = false
+    self.validateData()
 
-method invalidateData*(self: DynamicDataBehaviour) {.base.} =
-  self.dataInvalid = true
-  if self.component != nil:
-    self.component.invalidateComponentLayout() # Placeholder for invalidateComponentData
-
-method set*(self: DynamicDataBehaviour, value: Variant) =
-  self.valueInternal = value
-  self.invalidateData()
+method validateData*(self: DynamicDataBehaviour) =
+  discard

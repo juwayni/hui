@@ -1,5 +1,5 @@
 type
   IActionInputSource* = ref object of RootObj
 
-method start*(self: IActionInputSource) {.base.} =
+method start*(self: IActionInputSource) {.base, gcsafe.} =
   discard

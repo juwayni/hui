@@ -1,5 +1,6 @@
 import nimui/styles/dimension
 import nimui/constants/unit_time
+import nimui/util/variant
 
 type
   ValueKind* = enum
@@ -21,3 +22,12 @@ type
       vTime*: float
       unit*: UnitTime
     of vkNone: discard
+
+proc toVariant*(v: Value): Variant =
+  case v.kind:
+    of vkString: return toVariant(v.vString)
+    of vkNumber: return toVariant(v.vNumber)
+    of vkBool: return toVariant(v.vBool)
+    of vkColor: return toVariant(v.vColor)
+    of vkDimension: return toVariant(v.vDimension)
+    else: return toVariant(nil)

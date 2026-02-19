@@ -1,6 +1,4 @@
 type
-  UnitTime* = string
-
-const
-  UnitTimeSeconds*: UnitTime = "s"
-  UnitTimeMilliseconds*: UnitTime = "ms"
+  UnitTime* = enum
+    SECONDS = "s"
+    MILLISECONDS = "ms"

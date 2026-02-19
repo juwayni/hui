@@ -1,26 +1,23 @@
 import times, os
 
 type
-  TimerImpl* = ref object
+  TimerImpl* = ref object of RootObj
     timerId*: int
     stopped*: bool
-    callback*: proc() {.closure.}
+    callback*: proc() {.gcsafe.}
     delay*: float
     lastTime*: float
 
 var activeTimers*: seq[TimerImpl] = @[]
 
-proc newTimerImpl*(delayMs: int, callback: proc() {.closure.}): TimerImpl =
-  let res = TimerImpl(
-    delay: delayMs.float / 1000.0,
-    callback: callback,
-    stopped: false,
-    lastTime: epochTime()
-  )
-  activeTimers.add(res)
-  return res
+proc init*(self: TimerImpl, delayMs: int, callback: proc() {.gcsafe.}) =
+  self.delay = delayMs.float / 1000.0
+  self.callback = callback
+  self.stopped = false
+  self.lastTime = epochTime()
+  activeTimers.add(self)
 
-proc stop*(self: TimerImpl) =
+method stop*(self: TimerImpl) {.base, gcsafe.} =
   self.stopped = true
 
 proc updateTimers*() =

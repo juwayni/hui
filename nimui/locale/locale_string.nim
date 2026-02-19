@@ -1,0 +1,2 @@
+type
+  LocaleString* = string

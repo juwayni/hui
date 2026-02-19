@@ -1,19 +1,6 @@
-import nimui/backend/event_base
 import nimui/backend/event_impl
-import nimui/util/variant
 import nimui/core/types
-
-proc newUIEvent*(eventType: string, bubble: bool = false, data: RootRef = nil): UIEvent =
-  result = UIEvent(
-    `type`: eventType,
-    bubble: bubble,
-    data: data,
-    canceled: false
-  )
-
-method cancel*(self: UIEvent) =
-  procCall self.EventBase.cancel()
-  self.canceled = true
+import nimui/util/variant
 
 const
   UIEventReady* = "ready"
@@ -40,3 +27,29 @@ const
   UIEventComponentRemoved* = "componentremoved"
   UIEventComponentAddedToParent* = "componentaddedtoparent"
   UIEventComponentRemovedFromParent* = "componentremovedfromparent"
+
+type
+  UIEvent* = ref object of EventImpl
+    typ*: string
+    target*: Component
+    bubble*: bool
+    data*: Variant
+    canceled*: bool
+    relatedEvent*: UIEvent
+    relatedComponent*: Component
+    value*: Variant
+    previousValue*: Variant
+
+proc init*(self: UIEvent, typ: string, bubble: bool = false, data: Variant = toVariant(nil)) =
+  self.typ = typ
+  self.bubble = bubble
+  self.data = data
+  self.canceled = false
+
+proc newUIEvent*(typ: string, bubble: bool = false, data: Variant = toVariant(nil)): UIEvent =
+  new result
+  result.init(typ, bubble, data)
+
+method cancel*(self: UIEvent) =
+  procCall self.EventImpl.cancel()
+  self.canceled = true

@@ -7,5 +7,5 @@ proc newAbsoluteLayout*(): AbsoluteLayout =
   new result
 
 method repositionChildren*(self: AbsoluteLayout) =
-  # Absolute layout does not reposition children
+  # Absolute layout doesn't reposition children (they keep their own left/top)
   discard

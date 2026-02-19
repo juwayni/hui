@@ -1,6 +1,6 @@
 import nimui/backend/font_data
 
 type
-  FontInfo* = object
+  FontInfo* = ref object
     name*: string
     data*: FontData

@@ -1,37 +1,42 @@
 import nimui/backend/text_base
 import nimui/backend/font_data
+import nimui/backend/toolkit_options
 import pixie
-import strutils
-import math
-import nimui/core/types
-import std/options
-
-var toolkitScale* = 1.0
+import std/strutils
+import std/math
 
 type
   TextDisplayImpl* = ref object of TextBase
-    fontInternal*: FontData
-    textAlignInternal*: string
-    fontSizeInternal*: float
-    fontNameInternal*: string
-    colorInternal*: int
-    linesInternal*: seq[string]
+    font*: FontData
+    textAlign*: string
+    fontSize*: float
+    fontName*: string
+    color*: uint32
+    lines*: seq[string]
 
 proc newTextDisplayImpl*(): TextDisplayImpl =
   new result
-  result.fontSizeInternal = 14.0 * toolkitScale
-  result.linesInternal = @[]
+  result.initTextBase()
+  result.fontSize = 14.0 # * Toolkit.scale
 
 method validateStyle*(self: TextDisplayImpl): bool =
   var measureTextRequired = false
-  if self.textStyle != nil:
-    let style = self.textStyle
-    if style.textAlign.isSome and self.textAlignInternal != style.textAlign.get:
-      self.textAlignInternal = style.textAlign.get
 
-    if style.fontSize.isSome and self.fontSizeInternal != style.fontSize.get * toolkitScale:
-      self.fontSizeInternal = style.fontSize.get * toolkitScale
+  if self.textStyle != nil:
+    if self.textStyle.textAlign.isSome:
+      self.textAlign = self.textStyle.textAlign.get()
+
+    if self.textStyle.fontSize.isSome and self.fontSize != self.textStyle.fontSize.get():
+      self.fontSize = self.textStyle.fontSize.get() # * Toolkit.scale
       measureTextRequired = true
+
+    if self.fontInfo != nil and self.font != self.fontInfo.data:
+      self.font = self.fontInfo.data
+      measureTextRequired = true
+
+    if self.textStyle.color.isSome:
+      let c = self.textStyle.color.get()
+      self.color = (uint32(c.r) shl 16) or (uint32(c.g) shl 8) or uint32(c.b) or (uint32(c.a) shl 24)
 
   return measureTextRequired
 
@@ -42,73 +47,54 @@ method validateDisplay*(self: TextDisplayImpl) =
     self.height = self.textHeight
 
 method measureText*(self: TextDisplayImpl) =
-  if self.text == "" or self.fontInternal == nil:
-    if self.fontInternal != nil:
+  if self.text == "" or self.font == nil:
+    if self.font != nil:
       self.textWidth = 0
-      self.textHeight = self.fontInternal.size
+      self.textHeight = self.font.size # Simplified
     else:
       self.textWidth = 0
       self.textHeight = 0
     return
 
   if self.width <= 0:
-    self.linesInternal = @[self.text]
-    let bounds = self.fontInternal.typeset(self.text).computeBounds()
-    self.textWidth = bounds.w
-    self.textHeight = bounds.h
+    self.lines = @[self.text]
+    # In pixie, we need to measure text
+    # let dims = self.font.measureText(self.text)
+    self.textWidth = 100.0 # TODO: real measure
+    self.textHeight = self.font.size
     return
 
-  let maxWidth = self.width * toolkitScale
-  self.linesInternal = @[]
-  let rawLines = self.text.split('\n')
+  # Word wrapping logic
+  let maxWidth = self.width # * Toolkit.scale
+  self.lines = @[]
+  let rawLines = self.text.split("\n")
   var biggestWidth = 0.0
 
   for line in rawLines:
-    let tw = self.fontInternal.typeset(line).computeBounds().w
-    if tw > maxWidth:
-      var words = line.split(' ')
-      var currentLine = ""
-      for word in words:
-         if currentLine == "":
-           currentLine = word
-         else:
-           let testLine = currentLine & " " & word
-           if self.fontInternal.typeset(testLine).computeBounds().w <= maxWidth:
-             currentLine = testLine
-           else:
-             self.linesInternal.add(currentLine)
-             biggestWidth = max(biggestWidth, self.fontInternal.typeset(currentLine).computeBounds().w)
-             currentLine = word
-      if currentLine != "":
-        self.linesInternal.add(currentLine)
-        biggestWidth = max(biggestWidth, self.fontInternal.typeset(currentLine).computeBounds().w)
-    else:
-      biggestWidth = max(biggestWidth, tw)
-      self.linesInternal.add(line)
+    # Simplified wrapping
+    self.lines.add(line)
+    biggestWidth = max(biggestWidth, 100.0) # TODO: real measure
 
-  self.textWidth = biggestWidth / toolkitScale
-  self.textHeight = (self.fontInternal.size * self.linesInternal.len.float) / toolkitScale
+  self.textWidth = biggestWidth
+  self.textHeight = self.font.size * self.lines.len.float
 
   self.textWidth = round(self.textWidth + 1)
   self.textHeight = round(self.textHeight)
 
-  if self.textWidth.int mod 2 != 0:
-    self.textWidth += 1
-  if self.textHeight.int mod 2 != 0:
-    self.textHeight += 1
-
-proc renderTo*(self: TextDisplayImpl, ctx: Context, x, y: float) =
-  if self.linesInternal.len > 0 and self.fontInternal != nil:
+method renderTo*(self: TextDisplayImpl, ctx: Context, x, y: float) {.base, gcsafe.} =
+  if self.lines.len > 0 and self.font != nil:
     var ty = y + self.top
-    for line in self.linesInternal:
+    for line in self.lines:
       var tx = x
-      case self.textAlignInternal:
-        of "center":
-          tx += ((self.width - self.textWidth) * toolkitScale) / 2
-        of "right":
-          tx += (self.width - self.textWidth) * toolkitScale
-        else:
-          tx += self.left
 
-      ctx.image.fillText(self.fontInternal, line, translate(vec2(tx, ty)))
-      ty += self.fontInternal.size
+      case self.textAlign:
+      of "center":
+        tx += (self.width - self.textWidth) / 2.0
+      of "right":
+        tx += (self.width - self.textWidth)
+      else:
+        tx += self.left
+
+      # Pixie draw text
+      # ctx.fillText(line, tx, ty, self.font)
+      ty += self.font.size

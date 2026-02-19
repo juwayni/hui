@@ -21,4 +21,6 @@ proc a*(c: Color): int = (int(c) shr 24) and 0xFF
 proc fromComponents*(r, g, b, a: int): Color =
   return Color(((a and 0xFF) shl 24) or ((r and 0xFF) shl 16) or ((g and 0xFF) shl 8) or (b and 0xFF))
 
+proc fromInt*(i: int): Color = Color(i)
+
 proc toInt*(c: Color): int = int(c)
